@@ -26,22 +26,24 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                dir('node-app') {
-                    withSonarQubeEnv('sonarqube') {
-                        sh '''
-                            npx sonar-scanner \
-                              -Dsonar.projectKey=node-express-app \
-                              -Dsonar.projectName="Node Express App" \
-                              -Dsonar.sources=. \
-                              -Dsonar.exclusions=node_modules/**,coverage/** \
-                              -Dsonar.host.url=$SONAR_HOST_URL
-                        '''
-                    }
-                }
+       stage('SonarQube Analysis') {
+    steps {
+        script {
+            def scannerHome = tool 'sonarscanner'
+
+            withSonarQubeEnv('sonarqube') {
+                sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                      -Dsonar.projectKey=node-express-app \
+                      -Dsonar.projectName="Node Express App" \
+                      -Dsonar.sources=node-app \
+                      -Dsonar.exclusions=node-app/node_modules/**,node-app/coverage/** \
+                      -Dsonar.sourceEncoding=UTF-8
+                """
             }
         }
+    }
+}
     }
 
     post {
