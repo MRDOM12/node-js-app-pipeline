@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:20-alpine'
+            args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     stages {
 
@@ -13,6 +18,8 @@ pipeline {
         stage('Build and Test') {
             steps {
                 dir('node-app') {
+                    sh 'node --version'
+                    sh 'npm --version'
                     sh 'npm ci'
                     sh 'npm test'
                 }
